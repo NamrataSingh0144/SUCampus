@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../home/home.dart';
+import 'signup.dart'; // Import the new sign-up screen
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,37 +16,31 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   Future<void> _login() async {
-    // Store the BuildContext before the async gap.
+    // Storing the context is a good practice for async operations.
     final currentContext = context;
-    // Check if the widget is still mounted before showing the SnackBar.
     if (!mounted) return;
 
     setState(() {
       _isLoading = true;
     });
 
+    // Simulate network delay
     await Future.delayed(const Duration(seconds: 2));
 
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    // Hide loading indicator
-    // Check if the widget is still mounted before calling setState.
     if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
 
     if (email.isNotEmpty && password.isNotEmpty) {
-      // Navigate to home screen and remove login screen from the stack
-      // Check if the widget is still mounted before using the BuildContext.
       if (!mounted) return;
       Navigator.of(currentContext).pushReplacement(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } else {
-      // Show an error message
-      // Check if the widget is still mounted before using the BuildContext.
       if (!mounted) return;
       ScaffoldMessenger.of(currentContext).showSnackBar(
         const SnackBar(
@@ -116,6 +112,38 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: const Text('Login', style: TextStyle(fontSize: 18)),
               ),
+
+              const SizedBox(height: 24),
+
+              // "Don't have an account?" text with clickable Sign Up
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16,
+                  ),
+                  children: <TextSpan>[
+                    const TextSpan(text: "Don't have an account? "),
+                    TextSpan(
+                      text: 'Sign up',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      // Makes the text clickable and handles the navigation
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const SignUp(),
+                            ),
+                          );
+                        },
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -123,3 +151,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
