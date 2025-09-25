@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'login.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -13,19 +14,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
   bool _agreeToTerms = false;
   bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
     _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -38,18 +36,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ScaffoldMessenger.of(currentContext).showSnackBar(
         SnackBar(
           content: const Text('You must agree to the terms and conditions.'),
-          backgroundColor: Colors.red.shade400,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
-      return;
-    }
-
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(currentContext).showSnackBar(
-        SnackBar(
-          content: const Text('Passwords do not match.'),
           backgroundColor: Colors.red.shade400,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -114,39 +100,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         backgroundColor: Colors.green.shade400,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-  }
-
-  Widget _buildSocialButton({
-    required String text,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onPressed,
-  }) {
-    return Container(
-      width: double.infinity,
-      height: 50,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TextButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, color: color, size: 20),
-        label: Text(
-          text,
-          style: TextStyle(
-            color: Colors.grey.shade700,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
       ),
     );
   }
@@ -306,39 +259,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         obscureText: !_isPasswordVisible,
                       ),
-                      const SizedBox(height: 16),
-
-                      // Confirm Password Field
-                      TextField(
-                        controller: _confirmPasswordController,
-                        decoration: InputDecoration(
-                          labelText: 'Confirm Password',
-                          hintText: 'Confirm your password',
-                          prefixIcon: Icon(Icons.lock_outline_rounded, color: Colors.grey.shade600),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isConfirmPasswordVisible ? Icons.visibility_rounded : Icons.visibility_off_rounded,
-                              color: Colors.grey.shade600,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                              });
-                            },
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey.shade50,
-                        ),
-                        obscureText: !_isConfirmPasswordVisible,
-                      ),
                       const SizedBox(height: 20),
 
                       // Terms and Conditions Checkbox
@@ -458,19 +378,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Social Sign Up Buttons
-                      _buildSocialButton(
-                        text: 'Sign up with Google',
-                        icon: Icons.g_mobiledata,
-                        color: Colors.red,
-                        onPressed: () => _socialSignUp('Google'),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildSocialButton(
-                        text: 'Sign up with GitHub',
-                        icon: Icons.code,
-                        color: Colors.black87,
-                        onPressed: () => _socialSignUp('GitHub'),
+                      // Social Sign Up Icons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              onPressed: () => _socialSignUp('Google'),
+                              icon: const FaIcon(FontAwesomeIcons.google, color: Colors.red),
+                              iconSize: 24,
+                              padding: const EdgeInsets.all(12),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              onPressed: () => _socialSignUp('GitHub'),
+                              icon: const FaIcon(FontAwesomeIcons.github, color: Colors.black87),
+                              iconSize: 24,
+                              padding: const EdgeInsets.all(12),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
