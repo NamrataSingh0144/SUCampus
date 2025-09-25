@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../home/home.dart';
 import 'signup.dart';
 import 'forgetPassword.dart';
@@ -82,39 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.green.shade400,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-  }
-
-  Widget _buildSocialButton({
-    required String text,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onPressed,
-  }) {
-    return Container(
-      width: double.infinity,
-      height: 50,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TextButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, color: color, size: 20),
-        label: Text(
-          text,
-          style: TextStyle(
-            color: Colors.grey.shade700,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
       ),
     );
   }
@@ -330,19 +298,36 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Social Login Buttons
-                      _buildSocialButton(
-                        text: 'Continue with Google',
-                        icon: Icons.g_mobiledata,
-                        color: Colors.red,
-                        onPressed: () => _socialLogin('Google'),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildSocialButton(
-                        text: 'Continue with GitHub',
-                        icon: Icons.code,
-                        color: Colors.black87,
-                        onPressed: () => _socialLogin('GitHub'),
+                      // Social Login Icons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              onPressed: () => _socialLogin('Google'),
+                              icon: const FaIcon(FontAwesomeIcons.google, color: Colors.red),
+                              iconSize: 24,
+                              padding: const EdgeInsets.all(12),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              onPressed: () => _socialLogin('GitHub'),
+                              icon: const FaIcon(FontAwesomeIcons.github, color: Colors.black87),
+                              iconSize: 24,
+                              padding: const EdgeInsets.all(12),
+                            ),
+                          ),
+                        ],
                       ),
 
                     ],
