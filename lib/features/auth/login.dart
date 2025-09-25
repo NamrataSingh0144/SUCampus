@@ -180,6 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
+
                 ),
                 const SizedBox(height: 32),
 
@@ -343,13 +344,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.black87,
                         onPressed: () => _socialLogin('GitHub'),
                       ),
-                      const SizedBox(height: 12),
-                      _buildSocialButton(
-                        text: 'Continue with Apple',
-                        icon: Icons.apple,
-                        color: Colors.black87,
-                        onPressed: () => _socialLogin('Apple'),
-                      ),
+
                     ],
                   ),
                 ),
