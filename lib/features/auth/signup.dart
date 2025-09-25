@@ -472,13 +472,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         color: Colors.black87,
                         onPressed: () => _socialSignUp('GitHub'),
                       ),
-                      const SizedBox(height: 12),
-                      _buildSocialButton(
-                        text: 'Sign up with Apple',
-                        icon: Icons.apple,
-                        color: Colors.black87,
-                        onPressed: () => _socialSignUp('Apple'),
-                      ),
                     ],
                   ),
                 ),
