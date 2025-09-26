@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class StudentHomeScreen extends StatelessWidget {
+  const StudentHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
       ),
       body: const Center(
         child: Text(
-          'Welcome to the Campus App!',
+          'Welcome to the student page of Campus App!',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
