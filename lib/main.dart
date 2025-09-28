@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
-import 'features/auth/login.dart'; // Import the new login screen
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart'; // This line requires the auto-generated file
+import 'features/auth/login.dart';
 
-void main() {
+void main() async {
+  // This is necessary for Firebase to initialize properly before the app runs
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase using the auto-generated options file
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
@@ -15,16 +25,19 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
-        // Define a consistent theme for input fields
+        // Optional: A consistent theme for all text fields in the app
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey.shade300),
           ),
+          filled: true,
+          fillColor: Colors.grey.shade50,
         ),
       ),
-      // Set the LoginScreen as the first screen the user sees.
+      // The app will always start on the Login Screen
       home: const LoginScreen(),
-      debugShowCheckedModeBanner: false, // Hides the debug banner
+      debugShowCheckedModeBanner: false,
     );
   }
 }
