@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "160008144843",
+    "project_id": "campus-connect-47838",
+    "storage_bucket": "campus-connect-47838.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160008144843:android:f16f50c703d123a959184e",
+        "android_client_info": {
+          "package_name": "com.example.campus_food"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "160008144843-cmtunem4m38uhe365t5vhfcqll58c30o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfu6BPVUbtGQFQ-2qqID1EdnifONGCl8o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "160008144843-cmtunem4m38uhe365t5vhfcqll58c30o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "160008144843-e278u50ndrpkr6cuei2s84mm5toec2dj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.campusFood"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

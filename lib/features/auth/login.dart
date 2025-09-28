@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // Core and Feature Imports
 import '../../core/models/user_role.dart';
+import '../../core/services/firebase_auth_service.dart';
 import 'signup.dart';
 import 'forgetPassword.dart';
 import '../student/screens/home.dart';
@@ -20,6 +21,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _authService = FirebaseAuthService();
+
   bool _isLoading = false;
   bool _isPasswordVisible = false;
 
@@ -30,44 +33,77 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // --- THIS IS THE NEW "SMART" LOGIN FUNCTION ---
   Future<void> _login() async {
     if (!mounted) return;
+
+    // Validation
+    if (!_validateForm()) return;
+
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 1)); // Simulate network call
 
     try {
-      // --- FUTURE FIREBASE LOGIC ---
-      // 1. Authenticate with Firebase Auth
-      // final userCredential = await FirebaseAuth.instance.signInWith...
-      // final userId = userCredential.user!.uid;
-
-      // 2. Fetch user's role from Firestore
-      // final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-      // final roleString = userDoc.get('role') as String;
-
-      // --- FOR NOW, WE SIMULATE THE FETCHED ROLE ---
-      // TO TEST, CHANGE THIS VALUE to 'shop' or 'admin' and hot reload!
-      const roleString = 'student';
-
-      // Convert string from database to our UserRole enum
-      final userRole = UserRole.values.firstWhere((e) => e.name == roleString);
-
-      // Redirect based on the fetched role
-      _redirectToDashboard(userRole);
-
-    } catch (e) {
-      // Handle login errors (e.g., wrong password, user not found)
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login failed. Please check your credentials.')),
+      // Call Firebase service
+      final result = await _authService.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
       );
+
+      if (!mounted) return;
+
+      if (result['success']) {
+        _showSuccess(result['message']);
+
+        // Navigate to dashboard based on role
+        _navigateToRoleDashboard(result['role']);
+      } else {
+        _showError(result['message']);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showError('An unexpected error occurred. Please try again.');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
-  // Helper function to navigate based on role
-  void _redirectToDashboard(UserRole role) {
+  bool _validateForm() {
+    if (_emailController.text.trim().isEmpty || _passwordController.text.isEmpty) {
+      _showError('Please fill in all fields.');
+      return false;
+    }
+
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(_emailController.text.trim())) {
+      _showError('Please enter a valid email address.');
+      return false;
+    }
+
+    return true;
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red.shade400,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green.shade400,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _navigateToRoleDashboard(UserRole role) {
     if (!mounted) return;
 
     Widget destination;
@@ -82,21 +118,14 @@ class _LoginScreenState extends State<LoginScreen> {
         destination = const AdminPanelScreen();
         break;
     }
-    // Use pushReplacement so user can't press "back" to get to the login screen
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => destination));
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => destination),
+    );
   }
 
-  //  _socialLogin function
   Future<void> _socialLogin(String provider) async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Connecting with $provider...'),
-        backgroundColor: Colors.blue.shade400,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-    // Backend logic for social login will go here
+    _showError('$provider login will be available soon!');
   }
 
   @override
@@ -134,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Icon(
-                          Icons.school_rounded,
+                          Icons.restaurant_menu_rounded,
                           size: 60,
                           color: Theme.of(context).primaryColor,
                         ),
@@ -151,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Welcome back! Sign in to continue',
+                        'Order delicious food from campus',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
@@ -272,7 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       )
                           : ElevatedButton(
-                        onPressed: _login, // This now calls the smart login function
+                        onPressed: _login,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).primaryColor,
                           foregroundColor: Colors.white,
@@ -313,16 +342,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                            icon: const FaIcon(FontAwesomeIcons.google, color: Colors.red),
+                          _socialButton(
+                            icon: FontAwesomeIcons.google,
+                            color: Colors.red,
                             onPressed: () => _socialLogin('Google'),
-                            iconSize: 35,
                           ),
                           const SizedBox(width: 24),
-                          IconButton(
-                            icon: const FaIcon(FontAwesomeIcons.github, color: Colors.black87),
+                          _socialButton(
+                            icon: FontAwesomeIcons.github,
+                            color: Colors.black87,
                             onPressed: () => _socialLogin('GitHub'),
-                            iconSize: 35,
                           ),
                         ],
                       ),
@@ -369,5 +398,24 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-}
 
+  // Helper widget for social login buttons
+  Widget _socialButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: FaIcon(icon, color: color),
+        onPressed: onPressed,
+        iconSize: 24,
+        padding: const EdgeInsets.all(12),
+      ),
+    );
+  }
+}
