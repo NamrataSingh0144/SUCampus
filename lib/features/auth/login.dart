@@ -10,6 +10,7 @@ import 'forgetPassword.dart';
 import '../student/screens/home.dart';
 import '../shop/screens/shopScreen.dart';
 import '../admin/screens/adminScreen.dart';
+import 'email_verification_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -50,12 +51,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      if (result['success']) {
-        _showSuccess(result['message']);
 
-        // Navigate to dashboard based on role
-        _navigateToRoleDashboard(result['role']);
-      } else {
+      if (result['success']) {
+        // Check if email is verified
+        if (!_authService.isEmailVerified) {
+          // Navigate to verification screen
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => EmailVerificationScreen(userRole: result['role']),
+            ),
+          );
+        } else {
+          _showSuccess(result['message']);
+          _navigateToRoleDashboard(result['role']);
+        }
+        } else {
         _showError(result['message']);
       }
     } catch (e) {

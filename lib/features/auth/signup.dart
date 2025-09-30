@@ -7,6 +7,7 @@ import 'login.dart';
 import '../student/screens/home.dart';
 import '../shop/screens/shopScreen.dart';
 import '../admin/screens/adminScreen.dart';
+import 'email_verification_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -47,7 +48,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Call Firebase service
       final result = await _authService.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -58,13 +58,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (!mounted) return;
 
       if (result['success']) {
-        _showSuccess(result['message']);
+        // Send verification email
+        await _authService.sendEmailVerification();
 
-        // Wait for user to read success message
-        await Future.delayed(const Duration(seconds: 1));
-
-        // Navigate to dashboard based on role
-        _navigateToRoleDashboard(result['role']);
+        // Navigate to verification screen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => EmailVerificationScreen(userRole: _selectedRole),
+          ),
+        );
       } else {
         _showError(result['message']);
       }
