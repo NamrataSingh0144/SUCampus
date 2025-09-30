@@ -32,6 +32,7 @@ class FirebaseAuthService {
     }
   }
 
+
   // SIGN UP FUNCTION
   // Update your signUp method in firebase_auth_service.dart:
   // ALTERNATIVE SIGN UP FUNCTION - bypasses UserCredential return issue
@@ -261,44 +262,83 @@ class FirebaseAuthService {
   }
 
   // EMAIL VERIFICATION FUNCTIONS
-  Future<void> sendEmailVerification() async {
-    await _auth.currentUser?.sendEmailVerification();
-  }
+  // Add these methods to your FirebaseAuthService class
 
-  Future<void> reloadUser() async {
-    await _auth.currentUser?.reload();
-  }
-
-  bool get isEmailVerified => _auth.currentUser?.emailVerified ?? false;
-
-  // DELETE ACCOUNT
-  Future<Map<String, dynamic>> deleteAccount() async {
+// Send email verification
+  Future<Map<String, dynamic>> sendEmailVerification() async {
     try {
-      String userId = _auth.currentUser!.uid;
+      User? user = _auth.currentUser;
+      if (user == null) {
+        return {
+          'success': false,
+          'message': 'No user logged in',
+        };
+      }
 
-      // Delete user documents from Firestore
-      await _firestore.collection('users').doc(userId).delete();
+      if (user.emailVerified) {
+        return {
+          'success': true,
+          'message': 'Email is already verified',
+        };
+      }
 
-      // Delete role-specific document
-      UserRole role = await getUserRole(userId);
-      String collection = role == UserRole.shop ? 'shops' :
-      role == UserRole.admin ? 'admins' : 'user_profiles';
-      await _firestore.collection(collection).doc(userId).delete();
-
-      // Delete Firebase Auth account
-      await _auth.currentUser?.delete();
-
+      await user.sendEmailVerification();
       return {
         'success': true,
-        'message': 'Account deleted successfully',
+        'message': 'Verification email sent! Please check your inbox.',
       };
     } catch (e) {
       return {
         'success': false,
-        'message': 'Failed to delete account: $e',
+        'message': 'Failed to send verification email: $e',
       };
     }
   }
+
+// Check email verification status
+  Future<Map<String, dynamic>> checkEmailVerification() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user == null) {
+        return {
+          'success': false,
+          'message': 'No user logged in',
+        };
+      }
+
+      // Reload user to get latest verification status
+      await user.reload();
+      user = _auth.currentUser; // Get updated user
+
+      if (user?.emailVerified == true) {
+        // Update Firestore to reflect verification status
+        await _firestore.collection('users').doc(user!.uid).update({
+          'emailVerified': true,
+          'updatedAt': DateTime.now().millisecondsSinceEpoch,
+        });
+
+        return {
+          'success': true,
+          'verified': true,
+          'message': 'Email verified successfully!',
+        };
+      } else {
+        return {
+          'success': true,
+          'verified': false,
+          'message': 'Email not yet verified',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error checking verification: $e',
+      };
+    }
+  }
+
+// Get current verification status
+  bool get isEmailVerified => _auth.currentUser?.emailVerified ?? false;
 
   // CHANGE PASSWORD
   Future<Map<String, dynamic>> changePassword({
@@ -460,6 +500,7 @@ class FirebaseAuthService {
         return e.message ?? 'An authentication error occurred.';
     }
   }
+
 
   // UTILITY FUNCTIONS
   String? get currentUserEmail => _auth.currentUser?.email;
