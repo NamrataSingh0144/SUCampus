@@ -77,7 +77,11 @@ The project follows a clean, feature-first architecture to ensure scalability an
 │   │       └── screens
 │   └── main.dart
 ```
-🏁 Getting Started
+# Documentation
+[Google docs ](https://drive.google.com/drive/folders/1Gr_TA4f8giVa267sNiltkFqRjfCFlZra?usp=sharing)
+--- 
+# 🏁 Getting Started
+
 To get a local copy up and running, follow these simple steps.
 
 Prerequisites
